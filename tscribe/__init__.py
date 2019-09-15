@@ -44,7 +44,7 @@ def write(file, **kwargs):
     # Stats dictionary
     stats = {
         'timestamps': [],
-        'accuracy': [],
+        'confidence': [],
         '9.8': 0, '9': 0, '8': 0, '7': 0, '6': 0, '5': 0, '4': 0, '3': 0, '2': 0, '1': 0, '0': 0,
         'total': len(data['results']['items'])}
 
@@ -52,7 +52,7 @@ def write(file, **kwargs):
     for item in data['results']['items']:
         if item['type'] == 'pronunciation':
             stats['timestamps'].append(float(item['start_time']))
-            stats['accuracy'].append(int(float(item['alternatives'][0]['confidence']) * 100))
+            stats['confidence'].append(int(float(item['alternatives'][0]['confidence']) * 100))
             if float(item['alternatives'][0]['confidence']) >= 0.98: stats['9.8'] += 1
             elif float(item['alternatives'][0]['confidence']) >= 0.9: stats['9'] += 1
             elif float(item['alternatives'][0]['confidence']) >= 0.8: stats['8'] += 1
@@ -120,17 +120,17 @@ def write(file, **kwargs):
     document.add_paragraph()
     # Display scatter graph of confidence
     # Confidence of each word as scatter graph
-    plt.scatter(stats['timestamps'], stats['accuracy'])
+    plt.scatter(stats['timestamps'], stats['confidence'])
     # Mean average as line across graph
     plt.plot([stats['timestamps'][0], stats['timestamps'][-1]],
-             [statistics.mean(stats['accuracy']), statistics.mean(stats['accuracy'])], 'r')
+             [statistics.mean(stats['confidence']), statistics.mean(stats['confidence'])], 'r')
     # Formatting
     plt.xlabel('Time (seconds)')
     # plt.xticks(range(0, int(stats['timestamps'][-1]), 60))
-    plt.ylabel('Accuracy (percent)')
+    plt.ylabel('Confidence (percent)')
     plt.yticks(range(0, 101, 10))
-    plt.title('Accuracy during video')
-    plt.legend(['Accuracy average (mean)', 'Individual words'], loc='lower center')
+    plt.title('Confidence during recording')
+    plt.legend(['Confidence average (mean)', 'Individual words'], loc='lower center')
     plt.savefig('chart.png')
     document.add_picture('chart.png', width=Cm(14.64))
     document.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
